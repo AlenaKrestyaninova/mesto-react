@@ -1,5 +1,4 @@
 .profile__avatar-img {
-    border-radius: 50%;
-    width: 120px;
-    height: 120px;
+    box-sizing: border-box;
+    max-width: 100%;
 }

@@ -88,7 +88,6 @@ class Api {
             headers: this._headers,
             body: JSON.stringify(avatar)
         })
-        
         .then(this._getJsonOrError)
     }
 
