@@ -18,12 +18,29 @@ function App() {
   const [selectedCard, setSelectedCard] = React.useState({title: '', src: '', alt: ''});
   const [currentUser, setCurrentUser] = React.useState({});
   const [cards, setCards] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const isOpen = isEditAvatarPopupOpen || isEditProfilePopupOpen || isAddPlacePopupOpen || selectedCard;
+
+  React.useEffect(() => {
+    function closeByEscape(evt) {
+      if(evt.key === 'Escape') {
+        closeAllPopups();
+      }
+    }
+    if(isOpen) {
+      document.addEventListener('keydown', closeByEscape);
+      return () => {
+        document.removeEventListener('keydown', closeByEscape);
+      }
+    }
+  }, [isOpen]);
 
   React.useEffect(()=>{
     api.getUserInfo()
       .then(userInfo => {
         setCurrentUser(userInfo);
       })
+      .catch((err) => console.log(err))
   }, []);
 
   React.useEffect(()=>{
@@ -31,6 +48,7 @@ function App() {
       .then(cards => { 
         setCards(cards)
       })
+      .catch((err) => console.log(err))
   }, []);
 
   function handleEditAvatarClick(){
@@ -50,26 +68,41 @@ function App() {
   }
 
   function handleUpdateUser(currentUser){
+    setIsLoading(true);
     api.setUserInfo(currentUser)
       .then(userInfo => {
         setCurrentUser(userInfo);
         closeAllPopups()
       })
+      .catch((err) => console.log(err))
+      .finally(() => {
+        setIsLoading(false);
+      })
   }
 
   function handleUpdateAvatar(currentUser){
+    setIsLoading(true);
     api.setAvatar(currentUser)
       .then(avatar => {
         setCurrentUser(avatar);
         closeAllPopups()
       })
+      .catch((err) => console.log(err))
+      .finally(() => {
+        setIsLoading(false);
+      })
   }
 
   function handleAddPlaceSubmit(newCard){
+    setIsLoading(true);
     api.createCard(newCard)
       .then(newCard => {
         setCards([newCard, ...cards]);
         closeAllPopups()
+      })
+      .catch((err) => console.log(err))
+      .finally(() => {
+        setIsLoading(false);
       })
   }
 
@@ -79,12 +112,14 @@ function App() {
       api.likeCard(card._id)
         .then((newCard) => {
           setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
-      });
+        })
+        .catch((err) => console.log(err));
     } else {
       api.dislikeCard(card._id)
         .then((newCard) => {
           setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
-      });
+        })
+        .catch((err) => console.log(err));
     }
   };
 
@@ -93,6 +128,7 @@ function App() {
       .then(()=>
         setCards((state) => state.filter((c) => c._id !== card._id))
       )
+      .catch((err) => console.log(err))
   };
 
   function closeAllPopups(){
@@ -126,12 +162,14 @@ function App() {
           <EditProfilePopup 
             isOpen={isEditProfilePopupOpen} 
             onClose={closeAllPopups}
-            onUpdateUser={handleUpdateUser} />
+            onUpdateUser={handleUpdateUser}
+            isLoading={isLoading} />
 
           <AddPlacePopup 
             isOpen={isAddPlacePopupOpen} 
             onClose={closeAllPopups}
-            onAddPlace={handleAddPlaceSubmit}/>
+            onAddPlace={handleAddPlaceSubmit}
+            isLoading={isLoading}/>
           
           <PopupWithForm
             name={'delete'}
@@ -142,7 +180,8 @@ function App() {
           <EditAvatarPopup 
             isOpen={isEditAvatarPopupOpen} 
             onClose={closeAllPopups}
-            onUpdateAvatar={handleUpdateAvatar} />
+            onUpdateAvatar={handleUpdateAvatar}
+            isLoading={isLoading} />
 
         </div>
       </div>

@@ -31,16 +31,13 @@ function Main(props) {
       <section className="elements">
         <ul className="elements__container">
           {cards.map((card) => (
-
-            <li key={card._id} className="card">
               <Card
+                key={card._id}
                 onCardClick={onCardClick}
                 onCardLike={onCardLike}
                 onCardDelete={onCardDelete}
                 card={card}
-              />
-            </li>
-            
+              />            
           ))}
         </ul>
       </section>
