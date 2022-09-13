@@ -2,7 +2,7 @@ import React from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
 
 function Card(props) {
-  const {key, onCardClick, onCardLike, onCardDelete, card} = props;
+  const {onCardClick, onCardLike, onCardDelete, card} = props;
   const currentUser = React.useContext(CurrentUserContext);
   const isOwn = card.owner._id === currentUser._id;
   const cardDeleteButtonClassName = (`card__trash ${isOwn ? '' : 'card__trash_hidden'}`); 
@@ -22,7 +22,7 @@ function Card(props) {
   }
 
   return (
-    <li key={key} className="card">
+    <li className="card">
       <button type="button" className={cardDeleteButtonClassName}
         onClick = {()=>{handleDeleteClick(card)}}
       ></button>

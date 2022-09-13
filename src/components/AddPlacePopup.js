@@ -1,30 +1,23 @@
 import React from 'react';
 import PopupWithForm from './PopupWithForm.js';
+import { useForm } from '../hooks/useForm.js'
 
 function AddPlacePopup(props) {
   const {isOpen, onClose, onAddPlace, isLoading} = props;
-  const [placeName, setPlaceName] = React.useState('');
-  const [link, setLink] = React.useState('');
-
-  function handlePlaceNameChange(e) {
-    setPlaceName(e.target.value);
-  }
-
-  function handleLinkChange(e) {
-    setLink(e.target.value);
-  }
+  const {values, handleChange, setValues} = useForm({
+    name: '',
+    link: ''
+  });
 
   function handleSubmit(e) {
     e.preventDefault();
-    onAddPlace({
-      name: placeName,
-      link,
-    });
+    onAddPlace({ 
+      name: values.name, 
+      link: values.link });
   }
 
   React.useEffect(() => {
-    setPlaceName('');
-    setLink('');
+    setValues({name: '', link: ''})
   }, [isOpen]);
 
   return (
@@ -39,8 +32,8 @@ function AddPlacePopup(props) {
           type="text" 
           className="popup__input popup__input_type_place" 
           id="place-input"
-          value={placeName} 
-          onChange={handlePlaceNameChange}
+          value={values.name} 
+          onChange={handleChange}
           placeholder="Название" 
           name="name" 
           required 
@@ -51,8 +44,8 @@ function AddPlacePopup(props) {
           type="url" 
           className="popup__input popup__input_type_image" 
           id="img-input"
-          value={link} 
-          onChange={handleLinkChange}
+          value={values.link} 
+          onChange={handleChange}
           placeholder="Ссылка на картинку" 
           name="link" 
           required />
